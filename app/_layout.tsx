@@ -1,7 +1,11 @@
 import '../global.css';
+import {AuthProvider} from '~/contexts/AuthContext';
+import {Slot} from 'expo-router';
 
-import { Stack } from 'expo-router';
-
-export default function Layout() {
-  return <Stack />;
+export default function RootLayout() {
+    return (
+        <AuthProvider>
+            <Slot/>
+        </AuthProvider>
+    );
 }

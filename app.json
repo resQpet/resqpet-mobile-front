@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "src",
-    "slug": "src",
+    "name": "resqpet",
+    "slug": "resqpet",
     "version": "1.0.0",
 
-    "scheme": "src",
+    "scheme": "resqpet",
     "web": {
       "bundler": "metro",
       "output": "static",
