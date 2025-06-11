@@ -47,7 +47,7 @@ export const AuthProvider: FC<AuthProviderParam> = ({ children }) => {
     const { setToken, logout: logoutStore } = useAuthStore();
 
     useEffect(() => {
-        const isProtectedRoute = !pathname.startsWith('/(auth)') && pathname !== '/';
+        const isProtectedRoute = !pathname.startsWith('/(auth)/login');
 
         if (isProtectedRoute) {
             userService
