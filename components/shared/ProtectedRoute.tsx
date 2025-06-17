@@ -25,7 +25,7 @@ export const ProtectedRoute = ({
 
     if (validating) {
         return (
-            <View className="flex-1 justify-center items-center">
+            <View className="flex-1 justify-center items-center px-1">
                 <ActivityIndicator size="large" />
             </View>
         );
