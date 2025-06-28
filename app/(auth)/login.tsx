@@ -6,9 +6,9 @@ import {AuthService} from '~/services/auth/authService';
 import {PasswordInput} from '~/components/io/input/PasswordInput';
 import {LoginSchema} from '~/schemas/authSchema';
 import Toast from 'react-native-toast-message';
-import {useRouter} from 'expo-router';
+import {useRouter,Link} from 'expo-router';
 import {Input} from "~/components/io/input/Input";
-import {Text, View} from "react-native";
+import {Text, View,Image} from "react-native";
 import {Button} from "~/components/Button";
 
 const authService: AuthService = AuthService.instance;
@@ -41,12 +41,17 @@ export default function Login() {
     };
 
     return (
-        <View className="flex-1 justify-center p-4 bg-gray-100">
-            <Text className="items-center justify-center text-xl font-bold">Login</Text>
-            <Input control={control} name="username" placeholder="Usuario" autoCapitalize="none"/>
-            <PasswordInput control={control} name="password" placeholder="Contraseña"/>
-            <Button title="Iniciar sesión" onPress={handleSubmit(onSubmit)}/>
-            <Button title="Crear cuenta nueva" onPress={() => router.push('/(auth)/register')} />
+        <View className="flex-1 justify-center p-4 bg-emerald-600">
+            <View className='bg-gray-100 border border-gray-200 rounded-xl p-4 justify-center shadow-md'> 
+                <Image style={{height:"30%",width:"100%",alignSelf:'center'}} source={require('assets/image.png')}/>
+                <Text className="text-center text-xl font-bold">¡Bienvenido!</Text>
+                <Input control={control} name="username" placeholder="Usuario" autoCapitalize="none"/>
+                <PasswordInput control={control} name="password" placeholder="Contraseña"/>
+                <Button title="Iniciar sesión" onPress={handleSubmit(onSubmit)}/>
+                <Link  href='/(auth)/register'>
+                  <Text className='text-center text-blue-500'>Crear cuenta</Text>
+                </Link>
+            </View>
         </View>
     );
 }

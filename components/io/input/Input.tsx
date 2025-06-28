@@ -8,7 +8,7 @@ export const Input = ({ control, name, placeholder, secureTextEntry = false }: a
         render={({ field: { onChange, value }, fieldState: { error } }) => (
             <>
                 <TextInput
-                    className="border p-2 rounded bg-white mb-2"
+                    className="border p-2 rounded-lg bg-gray-100 mb-2"
                     value={value}
                     onChangeText={onChange}
                     placeholder={placeholder}

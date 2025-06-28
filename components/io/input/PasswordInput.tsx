@@ -8,7 +8,7 @@ export const PasswordInput = ({ control, name, placeholder }: any) => (
         render={({ field: { onChange, value }, fieldState: { error } }) => (
             <>
                 <TextInput
-                    className="border p-2 rounded bg-white"
+                    className="border p-2 rounded-lg bg-gray-100"
                     value={value}
                     onChangeText={onChange}
                     placeholder={placeholder}
