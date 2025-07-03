@@ -86,13 +86,11 @@ export abstract class BaseService<R = unknown> {
         const token: Nullable<TokenInfo> = info ? JSON.parse(info) : {};
 
         const headers: KeyValueOf<string> = (options?.headers as KeyValueOf<string>) ?? {};
-        const companyRNC: string = (await SecureStore.getItemAsync(StorageItem.CompanyRNC)) ?? '';
 
         isJson && (options.headers = {'Content-Type': 'application/json', ...options.headers});
         isNil(headers.authorization) &&
         nonNil(token?.token) &&
         (options.headers = {authorization: 'Bearer ' + token?.token, ...options.headers});
-        Boolean(companyRNC) && (options.headers = {'X-Auth-Company': companyRNC, ...options.headers});
 
         // Execute HTTP call
         return new Promise<T>((resolve, reject): void => {

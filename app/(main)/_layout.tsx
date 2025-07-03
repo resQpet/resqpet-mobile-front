@@ -16,6 +16,7 @@ export default function MainLayout() {
             {hasAuthority('access_full') && (
                 <Drawer.Screen name="Screens/(roles)/rolesList" options={{ title: 'Roles' }} />
             )};
+            <Drawer.Screen name='Screens/(publicaciones)PublicacionesList' options={{title:'publicaciones'}} />
         </Drawer>
     );
 }

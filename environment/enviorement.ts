@@ -4,5 +4,5 @@ export type EnviorementPproperty = {
 }
 
 export const Environment: EnviorementPproperty = {
-    apiURL: 'http://3.17.176.194:8020/api/v1'
+    apiURL: 'http://35.171.23.6:8020/api/v1'
 }
