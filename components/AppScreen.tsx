@@ -12,11 +12,11 @@ export const AppScreen = ({
     return (
         <>
             <Stack.Screen options={{ title }} />
-            <ScrollView className="flex-1 bg-white">
-                <View className="flex-1 p-6 items-start w-full max-w-2xl self-center">
+            < View className="flex-1 bg-white">
+                <View className="flex-1 w-full px-2 py-2">
                     {children}
                 </View>
-            </ScrollView>
+            </View>
         </>
     );
 };

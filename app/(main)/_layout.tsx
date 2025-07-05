@@ -17,6 +17,7 @@ export default function MainLayout() {
                 <Drawer.Screen name="Screens/(roles)/rolesList" options={{ title: 'Roles' }} />
             )};
             <Drawer.Screen name='Screens/(publicaciones)PublicacionesList' options={{title:'publicaciones'}} />
+            <Drawer.Screen name='Screens/(fundaciones)/fundacionesList' options={{title:'Fundaciones'}}/>
         </Drawer>
     );
 }

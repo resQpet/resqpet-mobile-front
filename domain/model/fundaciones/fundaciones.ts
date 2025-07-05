@@ -1,0 +1,29 @@
+
+export interface Fundaciones {
+    content:{
+        id:number;
+        createdAt:string;
+        updatedAt:string;
+        name:string;
+        founderDate:string;
+        email:string;
+        phone:string;
+        website:string;
+        memberCount:number;
+        status:string;
+        locations:{
+             id:number;
+             createdAt:string;
+             updatedAt:string;
+             country:string;
+             city:string;
+             address:string;
+        }[]
+    }[];
+    page:{
+        size:number;
+        number:number;
+        totalElements:number;
+        totalPages:number;
+    }
+}
