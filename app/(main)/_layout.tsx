@@ -10,10 +10,15 @@ export default function MainLayout() {
         <Drawer>
             <Drawer.Screen name="index" options={{ title: 'Inicio' }} />
             <Drawer.Screen name="Screens/(about)/about" options={{ title: 'About' }} />
-         
-                <Drawer.Screen name="Screens/(users)/usersList" options={{ title: 'Usuarios' }} />
+        
+            <Drawer.Screen name="Screens/(users)/usersList" options={{ title: 'Usuarios' }} />
        
-                <Drawer.Screen name="Screens/(roles)/rolesList" options={{ title: 'Roles' }} />
+            <Drawer.Screen name="Screens/(roles)/rolesList" options={{ title: 'Roles' }} /> 
+
+            <Drawer.Screen name='Screens/(publicaciones)PublicacionesList' options={{title:'publicaciones'}} />
+            
+            <Drawer.Screen name='Screens/(fundaciones)/fundacionesList' options={{title:'Fundaciones'}}/>
+
         </Drawer>
     );
 }

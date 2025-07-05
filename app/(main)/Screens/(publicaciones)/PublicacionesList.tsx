@@ -83,24 +83,21 @@ const [publicaciones, setPublicaciones] = useState<Publicaciones | null>(null);
                                 
                     </ScrollView>
           
-        )}
+                     )}
                     <Text className="text-sm text-right text-gray-400 mb-4">
                         {new Date(publicacion.eventDate).toLocaleDateString('es-ES', {
                                 day: 'numeric',
                                 month: 'long',
                                 year: 'numeric',})}
                     </Text>
-      </View>
+              </View>
       
     ))}
     
     
-  </ScrollView>
+      </ScrollView>
 
-
-
-            <SidebarMenu/>
         
-        </AppScreen>
+    </AppScreen>
     );
 }
