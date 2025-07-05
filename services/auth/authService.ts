@@ -4,6 +4,7 @@ import {UserPasswordLogin} from '~/domain/model/auth/login';
 import * as SecureStore from 'expo-secure-store';
 import {StorageItem} from "~/domain/types/storageItem";
 import base64 from 'react-native-base64';
+import { KeyValue } from '~/domain/types/steoreotype';
 
 export class AuthService extends BaseService {
     private static factory: AuthService = new AuthService();
@@ -16,31 +17,40 @@ export class AuthService extends BaseService {
         super('/auth');
     }
 
-    async authenticate({username, password}: UserPasswordLogin): Promise<TokenResponse> {
+    async authenticate({username, password}: UserPasswordLogin): Promise<AuthToken> {
+        
+        const request : KeyValue ={username,password,grant_type:'password'};
+        const endpoint :string ='/token';
+
         const headers = {
             Authorization: `Basic ${base64.encode(`${username}:${password}`)}`
         };
 
-        const response = await this.post<TokenResponse>('/token', {}, headers);
+        const {token} :TokenResponse = await this.form<TokenResponse>(endpoint,request,headers)
 
-        const tokenInfo: TokenInfo = {
-            token: response.token,
-            info: this.mapTokenToInfo(response.token),
-        };
+        const info: AuthToken = this.mapTokenToInfo(token);
+        const tokenInfo :TokenInfo = {info,token};
 
         await SecureStore.setItemAsync(StorageItem.TokenInfo, JSON.stringify(tokenInfo));
 
-        return response;
+        return info;
     }
 
-    async logout(): Promise<void> {
-        await SecureStore.deleteItemAsync(StorageItem.TokenInfo);
-        await SecureStore.deleteItemAsync(StorageItem.CompanyRNC);
+    logout(): void {
+        SecureStore.deleteItemAsync(StorageItem.TokenInfo).catch((err)=>
+        console.log('error al eliminar token:',err));
     }
 
-    async getCurrentToken(): Promise<TokenInfo | null> {
-        const info = await SecureStore.getItemAsync(StorageItem.TokenInfo);
-        return info ? JSON.parse(info) : null;
+    async getCurrentToken(): Promise<AuthToken | undefined>{
+        try{
+            const stored = await SecureStore.getItem(StorageItem.TokenInfo);
+            if(!stored)return undefined;
+            const tokenInfo: TokenInfo = JSON.parse(stored);
+            return tokenInfo.info;
+        }
+        catch(e){
+            console.error('error leyendo el token:',e)
+        }
     }
 
     private mapTokenToInfo(token: string): AuthToken {
@@ -55,7 +65,6 @@ export class AuthService extends BaseService {
         const payload = JSON.parse(jsonPayload);
         return {
             id: payload.sub,
-            company: payload.company,
             name: payload.user,
             role: payload.role,
             expiresAt: payload.exp * 1000,

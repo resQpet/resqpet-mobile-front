@@ -59,12 +59,11 @@ export abstract class BaseService<R = unknown> {
         return this.execRequest<T>(url, options);
     }
 
-    protected async form<T>(endpoint: string = '', data: any = {}, headers: Record<string, string> = {}): Promise<T> {
+    protected form<T>(endpoint: string = '', data: any = {}, headers: Record<string, string> = {}): Promise<T> {
         const formData: FormData = new FormData();
         Object.keys(data).forEach((key: string) => {
             formData.append(key, data[key]);
         });
-
         const url: string = getURI(joinURLParts(Environment.apiURL, this.baseURL, endpoint));
         const options: RequestInit = {method: 'POST', headers, body: formData};
 
@@ -84,13 +83,18 @@ export abstract class BaseService<R = unknown> {
         // SecureStore → get token and companyRNC
         const info: Nullable<string> = await SecureStore.getItemAsync(StorageItem.TokenInfo);
         const token: Nullable<TokenInfo> = info ? JSON.parse(info) : {};
-
         const headers: KeyValueOf<string> = (options?.headers as KeyValueOf<string>) ?? {};
-
         isJson && (options.headers = {'Content-Type': 'application/json', ...options.headers});
         isNil(headers.authorization) &&
         nonNil(token?.token) &&
         (options.headers = {authorization: 'Bearer ' + token?.token, ...options.headers});
+
+         
+        //test for login headers
+        const fakeLocation = { 
+        'X-Latitude':'18.483402','X-Longitude':'-69.929611'};
+         options.headers = { ...options.headers, ...fakeLocation};
+
 
         // Execute HTTP call
         return new Promise<T>((resolve, reject): void => {

@@ -9,14 +9,11 @@ export default function MainLayout() {
     return (
         <Drawer>
             <Drawer.Screen name="index" options={{ title: 'Inicio' }} />
-            <Drawer.Screen name="Screens/(about)/aboaut" options={{ title: 'About' }} />
-            {hasAuthority('access_full') && (
+            <Drawer.Screen name="Screens/(about)/about" options={{ title: 'About' }} />
+         
                 <Drawer.Screen name="Screens/(users)/usersList" options={{ title: 'Usuarios' }} />
-            )};
-            {hasAuthority('access_full') && (
+       
                 <Drawer.Screen name="Screens/(roles)/rolesList" options={{ title: 'Roles' }} />
-            )};
-            <Drawer.Screen name='Screens/(publicaciones)PublicacionesList' options={{title:'publicaciones'}} />
         </Drawer>
     );
 }

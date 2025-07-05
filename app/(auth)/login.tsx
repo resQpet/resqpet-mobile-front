@@ -10,21 +10,25 @@ import {useRouter,Link} from 'expo-router';
 import {Input} from "~/components/io/input/Input";
 import {Text, View,Image} from "react-native";
 import {Button} from "~/components/Button";
+import { useAuthContext } from '~/contexts/AuthContext';
 
 const authService: AuthService = AuthService.instance;
 
 export default function Login() {
 
+    const {authenticate} = useAuthContext()
+
     const router = useRouter();
 
     const {control, handleSubmit} = useForm<UserPasswordLogin>({
         resolver: yupResolver(LoginSchema),
+        reValidateMode:'onChange'
     });
 
-    const onSubmit = async (data: UserPasswordLogin) => {
+    const onSubmit = async ({username,password}: UserPasswordLogin) => {
         try {
-            await useAuthStore.getState().loadToken();
-
+           
+            await authenticate({username,password})
             Toast.show({
                 type: 'success',
                 text1: 'Login correcto',
@@ -43,7 +47,7 @@ export default function Login() {
     return (
         <View className="flex-1 justify-center p-4 bg-emerald-600">
             <View className='bg-gray-100 border border-gray-200 rounded-xl p-4 justify-center shadow-md'> 
-                <Image style={{height:"30%",width:"100%",alignSelf:'center'}} source={require('assets/image.png')}/>
+                <Image style={{height:"30%",width:"100%",alignSelf:'center'}} source={require('assets/logoResqpet.png')}/>
                 <Text className="text-center text-xl font-bold">¡Bienvenido!</Text>
                 <Input control={control} name="username" placeholder="Usuario" autoCapitalize="none"/>
                 <PasswordInput control={control} name="password" placeholder="Contraseña"/>

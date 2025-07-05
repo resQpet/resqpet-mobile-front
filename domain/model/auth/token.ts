@@ -1,7 +1,6 @@
 
 export interface AuthToken {
     id: string;
-    company: string;
     name: string;
     role: string;
     expiresAt: number;

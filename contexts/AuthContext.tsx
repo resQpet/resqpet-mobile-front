@@ -5,7 +5,7 @@ import { UserService } from '~/services/users/userService';
 import { User } from '~/domain/model/users/user';
 import { UserPasswordLogin } from '~/domain/model/auth/login';
 import { VOID } from '~/domain/types/steoreotype';
-import { useAuthStore } from '~/store/authStore';
+
 
 export type AuthProviderParam = { children: ReactNode };
 
@@ -22,18 +22,12 @@ export interface AuthContextValue {
     validating?: boolean;
     authenticated?: boolean;
     authenticate: (request: UserPasswordLogin) => void;
-    hasAuthority: (authority: string) => boolean;
+    hasAuthority?: (authority: string) => boolean;
 }
 
 export const AuthContext = createContext<AuthContextValue>({
-    current: undefined,
-    message: undefined,
-    loading: false,
-    logout: () => {},
-    validating: false,
-    authenticated: false,
+
     authenticate: VOID,
-    hasAuthority: () => false,
 });
 
 export const AuthProvider: FC<AuthProviderParam> = ({ children }) => {
@@ -44,22 +38,26 @@ export const AuthProvider: FC<AuthProviderParam> = ({ children }) => {
     const [loading, setLoading] = useState<boolean>(false);
     const [validating, setValidating] = useState<boolean>(true);
 
-    const { setToken, logout: logoutStore } = useAuthStore();
-
+    
     useEffect(() => {
         const isProtectedRoute = !pathname.startsWith('/(auth)/login');
 
         if (isProtectedRoute) {
-            userService
-                .current()
-                .then(setCurrent)
-                .catch(() => {
+            authService.getCurrentToken()
+                .then((auth)=>{
+                    if(!auth)throw new Error ('no token');
+                    return userService.current();
+                })
+                .then((user:User)=>{
+                    setCurrent(user)
+                })
+                .catch(()=>{
                     setCurrent(undefined);
                     router.replace(LOGIN_PATH);
                 })
-                .finally(() => {
+                .finally(()=>{
                     setValidating(false);
-                });
+                })
         } else {
             setValidating(false);
         }
@@ -70,38 +68,31 @@ export const AuthProvider: FC<AuthProviderParam> = ({ children }) => {
         return current.role.name === 'Dev' || current.role.authorities?.some(a => a.name === authority) || false;
     };
 
-    const authenticate = ({ username, password }: UserPasswordLogin): void => {
+   const authenticate = async ({ username, password }: UserPasswordLogin): Promise<void> => {
         setLoading(true);
         setMessage(undefined);
 
-        authService
-            .authenticate({ username, password })
-            .then((response) => {
-                const tokenInfo = authService['mapTokenToInfo'](response.token);
-                setToken({ token: response.token, info: tokenInfo });
+        try{
+            await authService.authenticate({username,password});
+            const user = await userService.current();
+            setCurrent(user);
+            router.replace(REDIRECT_AFTER_LOGIN);
 
-                router.replace(REDIRECT_AFTER_LOGIN);
-                return userService.current();
-            })
-            .then((employee: User) => {
-                setCurrent(employee);
-            })
-            .catch(() => {
-                setMessage('Usuario o contraseña incorrecto.');
-            })
-            .finally(() => {
-                setLoading(false);
-            });
-    };
+        }
+        catch(e){
+            console.log('error en autheticate',e)
+            setMessage('usuario contraseña incorrecta')
+        }
+        finally{
+            setLoading(false)
+        }
+    }
 
     const logout = () => {
         authService
             .logout()
-            .then(() => logoutStore())
-            .then(() => {
-                setCurrent(undefined);
-                router.replace(LOGIN_PATH);
-            });
+            setCurrent(undefined);
+            router.replace(LOGIN_PATH);
     };
 
     const providerValue: AuthContextValue = {
@@ -115,7 +106,7 @@ export const AuthProvider: FC<AuthProviderParam> = ({ children }) => {
         hasAuthority,
     };
 
-    return <AuthContext.Provider value={providerValue}>{children}</AuthContext.Provider>;
-};
+    return (<AuthContext.Provider value={providerValue}>{children}</AuthContext.Provider>);
+}
 
 export const useAuthContext = () => useContext(AuthContext);
