@@ -83,19 +83,16 @@ export abstract class BaseService<R = unknown> {
         // SecureStore → get token and companyRNC
         const info: Nullable<string> = await SecureStore.getItemAsync(StorageItem.TokenInfo);
         const token: Nullable<TokenInfo> = info ? JSON.parse(info) : {};
+        const latitud: string = ( await SecureStore.getItemAsync('latitud'))?? '';
+        const longitud: string = ( await SecureStore.getItemAsync('longitud'))?? '';
         const headers: KeyValueOf<string> = (options?.headers as KeyValueOf<string>) ?? {};
         isJson && (options.headers = {'Content-Type': 'application/json', ...options.headers});
         isNil(headers.authorization) &&
         nonNil(token?.token) &&
         (options.headers = {authorization: 'Bearer ' + token?.token, ...options.headers});
-
+        options.headers = { ...options.headers, ...{'X-Latitude':latitud, 'X-Longitude':longitud}};
+        
          
-        //test for login headers
-        const fakeLocation = { 
-        'X-Latitude':'18.483402','X-Longitude':'-69.929611'};
-         options.headers = { ...options.headers, ...fakeLocation};
-
-
         // Execute HTTP call
         return new Promise<T>((resolve, reject): void => {
             fetch(url, options)
