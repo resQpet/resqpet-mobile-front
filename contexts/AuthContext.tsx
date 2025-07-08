@@ -49,9 +49,7 @@ export const AuthProvider: FC<AuthProviderParam> = ({ children }) => {
                     return userService.current();
                 })
                 .then((user:User)=>{
-                    setCurrent(user)
-                })
-                .catch(()=>{
+                    setCurrent(user);
                     setCurrent(undefined);
                     router.replace(LOGIN_PATH);
                 })
