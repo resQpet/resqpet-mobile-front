@@ -50,15 +50,16 @@ const [publicaciones, setPublicaciones] = useState<Publicaciones | null>(null);
                     className="bg-white border border-gray-200 rounded-2xl p-4 mb-6 shadow-sm"
                 >
                     <View className="flex-row items-center space-x-2 mb-2">
-                    <View className="w-6 h-6 bg-amber-500 rounded-full items-center justify-center">
-                        <Text className="text-xs text-white font-bold">
-                        {publicacion.foundation.name.charAt(0)}
+                        <View className="w-6 h-6 rounded-full items-center justify-center">
+
+                            <Image className='w-[25px] h-[25px] mb-1 rounded-md' source={{uri: publicacion.foundation.logo}}/>
+
+                        </View>
+
+                        <Text className="text-sm text-gray-800 font-medium p-2">
+                            {publicacion.foundation.name}
                         </Text>
-                    </View>
-                    <Text className="text-sm text-gray-800 font-medium">
-                        {publicacion.foundation.name}
-                    </Text>
-                    
+                        
                     </View>
                     
                     <Text className="text-lg font-semibold text-gray-900 mb-1">
@@ -72,7 +73,7 @@ const [publicaciones, setPublicaciones] = useState<Publicaciones | null>(null);
                     {publicacion.images?.length > 0 && (
                     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                         {publicacion.images?.length > 0 && (
-                           <View className='items-center '>
+                           <View className='p-4 items-center '>
                             <Image
                                 source={{ uri: publicacion.images[0].imageUrl }}
                                 className='w-[270px] h-[160px] mb-1 rounded-md'

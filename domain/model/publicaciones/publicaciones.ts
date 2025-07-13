@@ -3,15 +3,6 @@ export interface Publicaciones {
     id: number;
     createdAt: string;
     updatedAt: string;
-    title: string;
-    content: string;
-    eventDate: string;
-    images: {
-      id: number;
-      createdAt: string;
-      updatedAt: string;
-      imageUrl: string;
-    }[];
     foundation: {
       id: number;
       createdAt: string;
@@ -22,6 +13,7 @@ export interface Publicaciones {
       phone: string;
       website: string;
       memberCount: number;
+      logo:string;
       status: string;
       locations: {
         id: number;
@@ -32,6 +24,26 @@ export interface Publicaciones {
         address: string;
       }[];
     };
+    title: string;
+    content: string;
+    eventDate: string;
+    animal:{
+      createdAt:string;
+      updateAt:string;
+      name:string;
+      species:string;
+      gender:string;
+      ageMounths:number;
+      size:string;
+      color:string;
+      status:string
+    }[];
+    images: {
+      id: number;
+      createdAt: string;
+      updatedAt: string;
+      imageUrl: string;
+    }[];
   }[];
   page: {
     size: number;
