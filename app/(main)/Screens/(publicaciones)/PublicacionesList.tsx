@@ -1,27 +1,56 @@
 import {Button} from '~/components/Button';
 import {useAuthContext} from '~/contexts/AuthContext';
-import {Text, View,ScrollView, ActivityIndicator,Image} from 'react-native';
+import {Text, View,ScrollView, ActivityIndicator,Image,TouchableOpacity} from 'react-native';
 import {AppScreen} from '~/components/AppScreen';
-import SidebarMenu from "~/components/SidebarMenu";
 import { Publicaciones } from '~/domain/model/publicaciones/publicaciones';
 import { useEffect,useState } from 'react';
 import { publicationsService } from '~/services/publicaciones/Publicaciones';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Likers } from '~/services/publicaciones/LikeServices';
+import { LikeCount,LikeTrue } from '~/domain/model/publicaciones/Likes';
+
+const Like = Likers.instance
+const Publicacion = publicationsService.instance
 
 export default function PublicacionesList() {
-    const {logout} = useAuthContext();
-     
-const [publicaciones, setPublicaciones] = useState<Publicaciones | null>(null);
-    const [loading, setLoading] = useState(true);
- 
-    useEffect(()=>{
-        const FetchPublicaciones = async () => {
-            try{
-                const res = await publicationsService.instance.GetPublicaciones(20);
-                setPublicaciones(res);
+  const [publicaciones, setPublicaciones] = useState<Publicaciones | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [likecounts, setLikecounts] = useState<Record<number, number>>({});
+  const [likedMap, setLikedMap] = useState<Record<number, boolean>>({});
+
+  useEffect(() => {
+
+    const FetchPublicaciones = async () => {
+      try {
+        const res = await Publicacion.GetPublicaciones(20);
+        setPublicaciones(res);
+
+        const ids = res.content.map(p => p.id);
+
+        // Obtener conteo de likes
+        const likes = await Like.GetMultipleLikerCount(ids);
+
+        const likeMap: Record<number, number> = {};
+        ids.forEach((id, index) => {
+          likeMap[id] = likes[index]?.result ?? 0;
+        });
+        setLikecounts(likeMap);
+
+        // Obtener si el usuario ya dio like a cada publicación
+        const likeTrueMap: Record<number, boolean> = {};
+        for (const id of ids) {
+          try {
+            const res = await Like.GetLikeTrue(id);
+            likeTrueMap[id] = res.result; 
+          } catch {
+            likeTrueMap[id] = false;
+          }
+        }
+        setLikedMap(likeTrueMap);
+
             }
             catch(e){
                 console.error("error al cargar",e)
-            
             }
             finally{
                 setLoading(false)
@@ -29,8 +58,32 @@ const [publicaciones, setPublicaciones] = useState<Publicaciones | null>(null);
         } 
         FetchPublicaciones();
     },[])
- 
 
+    const handleLikeToggle = async (publicationId: number) => {
+        const isLiked = likedMap[publicationId];
+
+        // Actualizar estado local
+        setLikedMap(prev => ({
+            ...prev,
+            [publicationId]: !isLiked
+        }));
+
+        setLikecounts(prev => ({
+            ...prev,
+            [publicationId]: prev[publicationId] + (isLiked ? -1 : 1)
+        }));
+
+        try {
+            if (isLiked) {
+            await Like.deleteLike(publicationId);
+            } else {
+            await Like.PostLike(publicationId);
+            }
+        } catch (error) {
+            console.error("Error al actualizar el like:", error);
+        }
+        };
+ 
 
     if (loading){
         return(
@@ -85,20 +138,40 @@ const [publicaciones, setPublicaciones] = useState<Publicaciones | null>(null);
                     </ScrollView>
           
                      )}
-                    <Text className="text-sm text-right text-gray-400 mb-4">
-                        {new Date(publicacion.eventDate).toLocaleDateString('es-ES', {
-                                day: 'numeric',
-                                month: 'long',
-                                year: 'numeric',})}
-                    </Text>
-              </View>
-      
-    ))}
-    
-    
-      </ScrollView>
 
-        
+                    <View className="flex-row justify-between items-center">
+                        <View className="flex-row">
+                            <TouchableOpacity onPress={() => handleLikeToggle(publicacion.id)}
+
+                        className="mr-3 flex-row">
+                                <Ionicons name={likedMap[publicacion.id] ? 'heart':'heart-outline'} 
+                                size={20} 
+                                color={likedMap[publicacion.id] ? 'red': 'gray'}/>
+                                <Text>{likecounts[publicacion.id] } </Text>
+
+                            </TouchableOpacity>
+
+
+                            <TouchableOpacity>
+                                <Ionicons name='chatbubbles-outline'
+                                size={24}
+                                color='gray'/>
+                            </TouchableOpacity>
+
+
+                        </View>
+
+                        <Text className="text-sm text-gray-400">
+                            {new Date(publicacion.eventDate).toLocaleDateString('es-ES', {
+                            day: 'numeric',
+                            month: 'long',
+                            year: 'numeric',
+                            })}
+                        </Text>
+                    </View>
+            </View>
+    ))}
+      </ScrollView>
     </AppScreen>
     );
 }
