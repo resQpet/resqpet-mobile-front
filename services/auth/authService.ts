@@ -5,7 +5,6 @@ import * as SecureStore from 'expo-secure-store';
 import {StorageItem} from "~/domain/types/storageItem";
 import base64 from 'react-native-base64';
 import { KeyValue } from '~/domain/types/steoreotype';
-import { Locations } from '../Location/LocationServices';
 
 export class AuthService extends BaseService {
     private static factory: AuthService = new AuthService();
@@ -33,13 +32,7 @@ export class AuthService extends BaseService {
         const tokenInfo :TokenInfo = {info,token};
 
         await SecureStore.setItemAsync(StorageItem.TokenInfo, JSON.stringify(tokenInfo));
-        const coords = await Locations.instance.getLocation();
 
-            if (coords) {
-
-                 await SecureStore.setItemAsync('latitud', coords.latitud.toString());
-                 await SecureStore.setItemAsync('longitud', coords.longitud.toString());
-            }
 
         return info;
     }

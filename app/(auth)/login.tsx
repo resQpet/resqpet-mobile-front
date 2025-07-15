@@ -12,8 +12,6 @@ import {Text, View,Image} from "react-native";
 import {Button} from "~/components/Button";
 import { useAuthContext } from '~/contexts/AuthContext';
 
-const authService: AuthService = AuthService.instance;
-
 export default function Login() {
 
     const {authenticate} = useAuthContext()
@@ -27,13 +25,11 @@ export default function Login() {
 
     const onSubmit = async ({username,password}: UserPasswordLogin) => {
         try {
-           
             await authenticate({username,password})
             Toast.show({
                 type: 'success',
                 text1: 'Login correcto',
             });
-
             router.replace('/');
         } catch (error) {
             Toast.show({

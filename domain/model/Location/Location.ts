@@ -1,4 +1,5 @@
-export interface CodLocation{
-    latitud:string;
-    longitud:string
+export interface LocationContextType {
+  latitude: number | null;
+  longitude: number | null;
+  refreshLocation: () => Promise<void>;
 }
