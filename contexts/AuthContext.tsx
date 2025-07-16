@@ -5,7 +5,7 @@ import { UserService } from '~/services/users/userService';
 import { User } from '~/domain/model/users/user';
 import { UserPasswordLogin } from '~/domain/model/auth/login';
 import { VOID } from '~/domain/types/steoreotype';
-
+import Toast from 'react-native-toast-message';
 
 export type AuthProviderParam = { children: ReactNode };
 
@@ -26,7 +26,6 @@ export interface AuthContextValue {
 }
 
 export const AuthContext = createContext<AuthContextValue>({
-
     authenticate: VOID,
 });
 
@@ -38,51 +37,61 @@ export const AuthProvider: FC<AuthProviderParam> = ({ children }) => {
     const [loading, setLoading] = useState<boolean>(false);
     const [validating, setValidating] = useState<boolean>(true);
 
-    
     useEffect(() => {
-        const isProtectedRoute = !pathname.startsWith('/(auth)/login');
+    const isProtectedRoute = !pathname.startsWith('/(auth)/login');
 
-        if (isProtectedRoute) {
-            authService.getCurrentToken()
-                .then((auth)=>{
-                    if(!auth)throw new Error ('no token');
+    if (isProtectedRoute) {
+        authService.getCurrentToken()
+            .then(
+                (auth) => {
+                    if (!auth) throw new Error('no token');
                     return userService.current();
-                })
-                .then((user:User)=>{
-                    setCurrent(user);
-                   
-                })
-                .catch(()=>{
-                     setCurrent(undefined);
+                    
+                },
+                () => {
+                    setCurrent(undefined);
                     router.replace(LOGIN_PATH);
-                })
-                .finally(()=>{
-                    setValidating(false);
-                })
-        } else {
-            setValidating(false);
-        }
-    }, [pathname]);
+                    throw new Error('fallo en getCurrentToken');
+                }
+            )
+            .then(
+                (user: User) => {
+                    setCurrent(user);
+                },
+                () => {
+                    setCurrent(undefined);
+                    router.replace(LOGIN_PATH);
+                }
+            )
+            .finally(() => {
+                setValidating(false);
+            });
+    } else {
+        setValidating(false);
+    }
+}, [pathname]);
+
 
     const hasAuthority = (authority: string): boolean => {
         if (!current) return false;
         return current.role.name === 'Dev' || current.role.authorities?.some(a => a.name === authority) || false;
     };
 
-   const authenticate = async ({ username, password }: UserPasswordLogin): Promise<void> => {
+    const authenticate = async ({ username, password }: UserPasswordLogin): Promise<void> => {
         setLoading(true);
         setMessage(undefined);
-
         try{
             await authService.authenticate({username,password});
             const user = await userService.current();
             setCurrent(user);
             router.replace(REDIRECT_AFTER_LOGIN);
-
         }
         catch(e){
-            console.log('error en autheticate',e)
             setMessage('usuario contraseña incorrecta')
+            Toast.show({
+                type: 'error',
+                text1: 'Error de login',
+                text2: 'Usuario o contraseña incorrectos',});
         }
         finally{
             setLoading(false)

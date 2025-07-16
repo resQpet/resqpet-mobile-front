@@ -1,5 +1,3 @@
-import {Button} from '~/components/Button';
-import {useAuthContext} from '~/contexts/AuthContext';
 import {Text, View,ScrollView, ActivityIndicator,Image,TouchableOpacity} from 'react-native';
 import {AppScreen} from '~/components/AppScreen';
 import { Publicaciones } from '~/domain/model/publicaciones/publicaciones';
@@ -7,7 +5,7 @@ import { useEffect,useState } from 'react';
 import { publicationsService } from '~/services/publicaciones/Publicaciones';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Likers } from '~/services/publicaciones/LikeServices';
-import { LikeCount,LikeTrue } from '~/domain/model/publicaciones/Likes';
+import Toast from 'react-native-toast-message';
 
 const Like = Likers.instance
 const Publicacion = publicationsService.instance
@@ -19,49 +17,53 @@ export default function PublicacionesList() {
   const [likedMap, setLikedMap] = useState<Record<number, boolean>>({});
 
   useEffect(() => {
+  const FetchPublicaciones = () => {
+    Publicacion.GetPublicaciones(20)
+        .then((res) => {
+                setPublicaciones(res);
 
-    const FetchPublicaciones = async () => {
-      try {
-        const res = await Publicacion.GetPublicaciones(20);
-        setPublicaciones(res);
+                const ids = res.content.map(p => p.id);
 
-        const ids = res.content.map(p => p.id);
+                return Like.GetMultipleLikerCount(ids).then((likes) => {
+                const likeMap: Record<number, number> = {};
+                ids.forEach((id, index) => {
+                    likeMap[id] = likes[index]?.result ?? 0;
+                });
+                setLikecounts(likeMap);
 
-        // Obtener conteo de likes
-        const likes = await Like.GetMultipleLikerCount(ids);
+                // Obtener si el usuario ya dio like a cada publicación
+                const likeTrueMap: Record<number, boolean> = {};
 
-        const likeMap: Record<number, number> = {};
-        ids.forEach((id, index) => {
-          likeMap[id] = likes[index]?.result ?? 0;
+                // Procesamos cada promesa individual con .then y guardamos sus resultados
+                const likeTruePromises = ids.map((id) =>
+                    Like.GetLikeTrue(id)
+                    .then((res) => {
+                        likeTrueMap[id] = res.result;
+                    })
+                    .catch(() => {
+                        likeTrueMap[id] = false;
+                    })
+                );
+
+                return Promise.all(likeTruePromises).then(() => {
+                    setLikedMap(likeTrueMap);
+                });
+                });
+                },(()=>{ 
+                    Toast.show({
+                    type: 'error',
+                    text1: 'Error de carga',
+                    });
+                }))
+        .finally(() => {
+            setLoading(false);
         });
-        setLikecounts(likeMap);
-
-        // Obtener si el usuario ya dio like a cada publicación
-        const likeTrueMap: Record<number, boolean> = {};
-        for (const id of ids) {
-          try {
-            const res = await Like.GetLikeTrue(id);
-            likeTrueMap[id] = res.result; 
-          } catch {
-            likeTrueMap[id] = false;
-          }
-        }
-        setLikedMap(likeTrueMap);
-
-            }
-            catch(e){
-                console.error("error al cargar",e)
-            }
-            finally{
-                setLoading(false)
-            } 
-        } 
-        FetchPublicaciones();
-    },[])
+        };
+    FetchPublicaciones();
+    }, []);
 
     const handleLikeToggle = async (publicationId: number) => {
         const isLiked = likedMap[publicationId];
-
         // Actualizar estado local
         setLikedMap(prev => ({
             ...prev,
@@ -73,18 +75,23 @@ export default function PublicacionesList() {
             [publicationId]: prev[publicationId] + (isLiked ? -1 : 1)
         }));
 
-        try {
-            if (isLiked) {
-            await Like.deleteLike(publicationId);
-            } else {
-            await Like.PostLike(publicationId);
-            }
-        } catch (error) {
-            console.error("Error al actualizar el like:", error);
-        }
-        };
- 
+        const promise = isLiked
+            ? Like.deleteLike(publicationId)
+            : Like.PostLike(publicationId)
 
+        promise.then(
+            () => {
+    
+            },
+            () => {
+                Toast.show({
+                type: 'error',
+                text1: 'Error de like',
+                });
+            }
+            );
+    };
+ 
     if (loading){
         return(
              <View className="flex-1 justify-center items-center bg-white px-6">
@@ -95,7 +102,7 @@ export default function PublicacionesList() {
     }
 
     return (
-       <AppScreen title="publicaciones">
+    <AppScreen title="publicaciones">
         <ScrollView className="bg-white px-4 py-6">
               {publicaciones?.content.map((publicacion) => (
                 <View
@@ -104,61 +111,48 @@ export default function PublicacionesList() {
                 >
                     <View className="flex-row items-center space-x-2 mb-2">
                         <View className="w-6 h-6 rounded-full items-center justify-center">
-
                             <Image className='w-[25px] h-[25px] mb-1 rounded-md' source={{uri: publicacion.foundation.logo}}/>
-
                         </View>
-
                         <Text className="text-sm text-gray-800 font-medium p-2">
                             {publicacion.foundation.name}
                         </Text>
-                        
                     </View>
                     
                     <Text className="text-lg font-semibold text-gray-900 mb-1">
                     {publicacion.title}
                     </Text>
 
-                   
                     <Text className="text-gray-700 mb-2">{publicacion.content}</Text>
-
 
                     {publicacion.images?.length > 0 && (
                     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                         {publicacion.images?.length > 0 && (
                            <View className='p-4 items-center '>
-                            <Image
-                                source={{ uri: publicacion.images[0].imageUrl }}
-                                className='w-[270px] h-[160px] mb-1 rounded-md'
-                                resizeMode="cover"
-                              />
+                                <Image
+                                    source={{ uri: publicacion.images[0].imageUrl }}
+                                    className='w-[270px] h-[160px] mb-1 rounded-md'
+                                    resizeMode="cover"
+                                />
                             </View>
-                            )}
-                                
+                        )}      
                     </ScrollView>
-          
                      )}
-
                     <View className="flex-row justify-between items-center">
+
                         <View className="flex-row">
                             <TouchableOpacity onPress={() => handleLikeToggle(publicacion.id)}
-
-                        className="mr-3 flex-row">
+                                className="mr-3 flex-row">
                                 <Ionicons name={likedMap[publicacion.id] ? 'heart':'heart-outline'} 
                                 size={20} 
                                 color={likedMap[publicacion.id] ? 'red': 'gray'}/>
                                 <Text>{likecounts[publicacion.id] } </Text>
-
                             </TouchableOpacity>
-
 
                             <TouchableOpacity>
                                 <Ionicons name='chatbubbles-outline'
                                 size={24}
                                 color='gray'/>
                             </TouchableOpacity>
-
-
                         </View>
 
                         <Text className="text-sm text-gray-400">
@@ -169,8 +163,7 @@ export default function PublicacionesList() {
                             })}
                         </Text>
                     </View>
-            </View>
-    ))}
+               </View>))}
       </ScrollView>
     </AppScreen>
     );

@@ -42,15 +42,16 @@ export class AuthService extends BaseService {
         console.log('error al eliminar token:',err));
     }
 
-    async getCurrentToken(): Promise<AuthToken | undefined>{
+    async getCurrentToken(): Promise<TokenInfo | undefined>{
         try{
             const stored = await SecureStore.getItem(StorageItem.TokenInfo);
             if(!stored)return undefined;
             const tokenInfo: TokenInfo = JSON.parse(stored);
-            return tokenInfo.info;
+            return tokenInfo;
         }
         catch(e){
             console.error('error leyendo el token:',e)
+            return undefined;
         }
     }
 

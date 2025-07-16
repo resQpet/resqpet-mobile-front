@@ -4,7 +4,7 @@ import * as Location from 'expo-location';
 import { Alert } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import { LocationContextType } from '~/domain/model/Location/Location';
-
+import Toast from 'react-native-toast-message';
 
 
 const LocationContext = createContext<LocationContextType>({
@@ -28,10 +28,10 @@ export const LocationProvider = ({ children }: { children: React.ReactNode }) =>
       Alert.alert('Location not enabled', 'Please enable your Location', [
         {
           text: 'Cancel',
-          onPress: () => console.log('Cancel Pressed'),
+          onPress: () => Toast.show({text1:'Cancel Pressed'}),
           style: 'cancel',
         },
-        { text: 'OK', onPress: () => console.log('OK Pressed') },
+        { text: 'OK', onPress: () => Toast.show({text1:'OK Pressed'}) },
       ]);
     }
   };
@@ -57,6 +57,5 @@ export const LocationProvider = ({ children }: { children: React.ReactNode }) =>
     </LocationContext.Provider>
   );
 };
-
 export const useLocationContext = () => useContext(LocationContext);
 

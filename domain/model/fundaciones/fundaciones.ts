@@ -1,29 +1,22 @@
+import { Model } from "../Model";
 
 export interface Fundaciones {
-    content:{
-        id:number;
-        createdAt:string;
-        updatedAt:string;
-        name:string;
-        founderDate:string;
-        email:string;
-        phone:string;
-        website:string;
-        memberCount:number;
-        status:string;
-        locations:{
-             id:number;
-             createdAt:string;
-             updatedAt:string;
-             country:string;
-             city:string;
-             address:string;
-        }[]
-    }[];
-    page:{
-        size:number;
-        number:number;
-        totalElements:number;
-        totalPages:number;
-    }
+    content: Fundacion[];
 }
+export interface location extends Model{
+    country:string;
+    city:string;
+    address:string;
+}
+
+export interface Fundacion extends Model{
+    name:string;
+    founderDate:string;
+    email:string;
+    phone:string;
+    website:string;
+    memberCount:number;
+    logo:string;
+    status:string;
+    locations:location[];
+ };

@@ -14,7 +14,5 @@ export class publicationsService extends BaseService<Publicaciones> {
 
       async GetPublicaciones(size=20):Promise<Publicaciones>{
             return super.get<Publicaciones>(`?size=${size}`)
-
       }
-
 }

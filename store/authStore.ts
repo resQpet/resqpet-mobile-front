@@ -17,11 +17,11 @@ export const useAuthStore = create<AuthState>((set) => ({
     isAuthenticated: false,
 
     loadToken: async () => {
-        const token = await authService.getCurrentToken();
-        set({ token, isAuthenticated: !!token });
+    const tokenInfo = await authService.getCurrentToken(); 
+     set({ token: tokenInfo ?? null, isAuthenticated: !!tokenInfo });
     },
 
-    setToken: (token) => set({ token, isAuthenticated: !!token }),
+    setToken: (tokenInfo) => set({ token: tokenInfo, isAuthenticated: !!tokenInfo }),
 
     logout: async () => {
         await authService.logout();

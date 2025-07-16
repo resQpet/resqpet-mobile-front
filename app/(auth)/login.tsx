@@ -15,7 +15,6 @@ import { useAuthContext } from '~/contexts/AuthContext';
 export default function Login() {
 
     const {authenticate} = useAuthContext()
-
     const router = useRouter();
 
     const {control, handleSubmit} = useForm<UserPasswordLogin>({
@@ -26,10 +25,6 @@ export default function Login() {
     const onSubmit = async ({username,password}: UserPasswordLogin) => {
         try {
             await authenticate({username,password})
-            Toast.show({
-                type: 'success',
-                text1: 'Login correcto',
-            });
             router.replace('/');
         } catch (error) {
             Toast.show({

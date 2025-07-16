@@ -1,4 +1,4 @@
-import { View,Text,Image,ScrollView} from "react-native";
+import { View,Text,Image,ScrollView,ActivityIndicator} from "react-native";
 import { useState,useEffect } from "react";
 import { FundacionesService } from "~/services/fundaciones/fundaciones";
 import { Fundaciones } from "~/domain/model/fundaciones/fundaciones";
@@ -8,33 +8,45 @@ import {useForm} from 'react-hook-form';
 import {yupResolver} from '@hookform/resolvers/yup';
 import {UserPasswordLogin} from '~/domain/model/auth/login';
 import {LoginSchema} from '~/schemas/authSchema';
+import Toast from "react-native-toast-message";
+
+const Fundacion = FundacionesService.instance;
 
 export default function fundacionesList () {
 
     const [fundaciones,setFundaciones] = useState<Fundaciones | null>(null);
     const [loading, setLoading] = useState(true)
+    const {control, handleSubmit} = useForm<UserPasswordLogin>({
+            resolver: yupResolver(LoginSchema),});
 
-
-const {control, handleSubmit} = useForm<UserPasswordLogin>({
-        resolver: yupResolver(LoginSchema),
-    });
     useEffect(()=>{
-    const FetchFundaciones = async () =>{
-        try{
-            const res = await FundacionesService.instance.GetFundaciones();
-            setFundaciones(res);
+        const FetchFundaciones = () =>{
 
-        }catch(e){
-            console.log('error',e)
+            Fundacion.GetFundaciones()
+            .then((res)=>{
+                 setFundaciones(res);
+            },
+            ()=>{
+                Toast.show({
+                    type:'error',
+                    text1: 'Error de carga'
+                })
+            })
+            .finally(()=>{
+                setLoading(false);
+            })
         }
-        finally{
-            setLoading(false);
+        FetchFundaciones();
+        },[])
+
+    if (loading){
+            return(
+                 <View className="flex-1 justify-center items-center bg-white px-6">
+                    <Text className="text-lg mt-4 text-gray-600">Cargando Fundaciones...</Text>
+                    <ActivityIndicator size="large" color="#4b5563" className="mt-4" />
+                </View>
+            )
         }
-    }
-    FetchFundaciones();
-    },[])
-
-
 
     return (
               <AppScreen title="Fundaciones">
@@ -49,45 +61,27 @@ const {control, handleSubmit} = useForm<UserPasswordLogin>({
                             className="bg-white border border-gray-200 rounded-2xl p-4 mb-6 shadow-sm"
                         >
                             <View className="flex-row items-center space-x-2 mb-2">
-
-
-                           
-                            <View className="w-12 h-12 bg-amber-500 rounded-full items-center justify-center">
-                                <Text className="text-lg text-white font-bold">
-                                {fundacion.name.charAt(0)}
+                                <View className="w-6 h-6 rounded-full items-center justify-center">
+                                    <Image className='w-[25px] h-[25px] mb-1 rounded-md' source={{uri: fundacion.logo}}/>
+                                </View>
+                                <Text className="text-xl font-semibold text-gray-800 p-2">
+                                     {fundacion.name}
                                 </Text>
                             </View>
 
-                            <Text className="text-xl font-semibold text-gray-800">
-                                {fundacion.name}
-                            </Text>
-                            </View>
-
-                            
                             <View className="mb-3">
-                            <Text className="text-sm text-gray-500">Correo electrónico</Text>
-                            <Text className="text-base text-gray-700">{fundacion.email}</Text>
+                                <Text className="text-sm text-gray-500">Correo electrónico</Text>
+                                <Text className="text-base text-gray-700">{fundacion.email}</Text>
                             </View>
 
-                           
                             <View>
-                            <Text className="text-sm text-gray-500">Teléfono</Text>
-                            <Text className="text-base text-gray-700">{fundacion.phone}</Text>
+                                <Text className="text-sm text-gray-500">Teléfono</Text>
+                                <Text className="text-base text-gray-700">{fundacion.phone}</Text>
                             </View>
                         </View>
-                        
-                            
                         ))}
                     </ScrollView>
-                    
                 </View>
-
-
-</AppScreen>
-
-    )
-
-
-
-
+             </AppScreen>
+       )
 }
