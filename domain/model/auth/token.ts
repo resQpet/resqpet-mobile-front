@@ -1,4 +1,3 @@
-
 export interface AuthToken {
     id: string;
     name: string;

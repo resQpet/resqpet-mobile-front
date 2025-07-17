@@ -21,18 +21,15 @@ export class AuthService extends BaseService {
         
         const request : KeyValue ={username,password,grant_type:'password'};
         const endpoint :string ='/token';
-
         const headers = {
             Authorization: `Basic ${base64.encode(`${username}:${password}`)}`
         };
 
         const {token} :TokenResponse = await this.form<TokenResponse>(endpoint,request,headers)
-
         const info: AuthToken = this.mapTokenToInfo(token);
         const tokenInfo :TokenInfo = {info,token};
 
         await SecureStore.setItemAsync(StorageItem.TokenInfo, JSON.stringify(tokenInfo));
-
 
         return info;
     }
