@@ -46,7 +46,7 @@ export interface User extends Model {
     role: UserRole;
 }
 
-export interface UserInfo {
+export interface UserInfo extends Model {
     firstName: string;
     lastName: string;
     gender: Gender;

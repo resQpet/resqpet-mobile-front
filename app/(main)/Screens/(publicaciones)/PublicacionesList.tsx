@@ -1,23 +1,36 @@
-import {Text, View,ScrollView, ActivityIndicator,Image,TouchableOpacity} from 'react-native';
+import {Text, View,ScrollView, ActivityIndicator,Image,TouchableOpacity,Modal} from 'react-native';
 import {AppScreen} from '~/components/AppScreen';
 import { Publicaciones } from '~/domain/model/publicaciones/publicaciones';
-import { useEffect,useState } from 'react';
+import { useEffect,useRef,useState } from 'react';
 import { publicationsService } from '~/services/publicaciones/Publicaciones';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Likers } from '~/services/publicaciones/LikeServices';
+import { Comment } from '~/services/publicaciones/CommentService';
+import { Comments } from '~/domain/model/publicaciones/Comment';
 import Toast from 'react-native-toast-message';
+import { BottomSheets } from '~/components/io/input/pageBottomSheet';
+import BottomSheet from '@gorhom/bottom-sheet';
+import Pagecomments from '~/components/io/input/pageComments';
+import React from 'react';
 
-const Like = Likers.instance
-const Publicacion = publicationsService.instance
+
+const Like = Likers.instance;
+const Commen= Comment.instance;
+const Publicacion = publicationsService.instance;
 
 export default function PublicacionesList() {
   const [publicaciones, setPublicaciones] = useState<Publicaciones | null>(null);
   const [loading, setLoading] = useState(true);
   const [likecounts, setLikecounts] = useState<Record<number, number>>({});
   const [likedMap, setLikedMap] = useState<Record<number, boolean>>({});
+  const [comentarios, setComentarios] = React.useState<Comments>({ content: [] });
+  const [IdpublicacionActual, setIdpublicacionActual] = useState<number | undefined>(undefined);
+
+  const sheetRef = useRef<BottomSheet>(null);
 
   useEffect(() => {
   const FetchPublicaciones = () => {
+    
     Publicacion.GetPublicaciones(20)
         .then((res) => {
                 setPublicaciones(res);
@@ -30,11 +43,9 @@ export default function PublicacionesList() {
                     likeMap[id] = likes[index]?.result ?? 0;
                 });
                 setLikecounts(likeMap);
-
                 // Obtener si el usuario ya dio like a cada publicación
                 const likeTrueMap: Record<number, boolean> = {};
 
-                // Procesamos cada promesa individual con .then y guardamos sus resultados
                 const likeTruePromises = ids.map((id) =>
                     Like.GetLikeTrue(id)
                     .then((res) => {
@@ -58,11 +69,11 @@ export default function PublicacionesList() {
         .finally(() => {
             setLoading(false);
         });
-        };
+     };
     FetchPublicaciones();
     }, []);
 
-    const handleLikeToggle = async (publicationId: number) => {
+    const handleLikeToggle = (publicationId: number) => {
         const isLiked = likedMap[publicationId];
         // Actualizar estado local
         setLikedMap(prev => ({
@@ -91,7 +102,16 @@ export default function PublicacionesList() {
             }
             );
     };
- 
+
+    const handleOpenComments = (publicationId: number) => {
+        Commen.GetComments(publicationId)
+        .then((res) => {
+            setComentarios(res);
+            setIdpublicacionActual(publicationId);
+            sheetRef.current?.expand();
+        });
+    };
+
     if (loading){
         return(
              <View className="flex-1 justify-center items-center bg-white px-6">
@@ -119,7 +139,7 @@ export default function PublicacionesList() {
                     </View>
                     
                     <Text className="text-lg font-semibold text-gray-900 mb-1">
-                    {publicacion.title}
+                        {publicacion.title}
                     </Text>
 
                     <Text className="text-gray-700 mb-2">{publicacion.content}</Text>
@@ -148,7 +168,7 @@ export default function PublicacionesList() {
                                 <Text>{likecounts[publicacion.id] } </Text>
                             </TouchableOpacity>
 
-                            <TouchableOpacity>
+                            <TouchableOpacity onPress={() => handleOpenComments(publicacion.id)}>
                                 <Ionicons name='chatbubbles-outline'
                                 size={24}
                                 color='gray'/>
@@ -163,8 +183,17 @@ export default function PublicacionesList() {
                             })}
                         </Text>
                     </View>
+
                </View>))}
       </ScrollView>
+
+      <BottomSheets ref = {sheetRef} title='Comentarios'>
+        <Pagecomments 
+                content={comentarios.content} 
+                publicacionId={IdpublicacionActual}
+            />
+      </BottomSheets>
+
     </AppScreen>
     );
 }
