@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^14.0.0",
+    "@gorhom/bottom-sheet": "^5.1.6",
     "@hookform/resolvers": "^5.1.1",
     "@react-navigation/drawer": "^7.4.1",
     "@react-navigation/native": "^7.0.3",
