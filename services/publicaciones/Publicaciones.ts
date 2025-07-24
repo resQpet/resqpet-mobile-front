@@ -1,18 +1,18 @@
-import { Publicaciones } from "~/domain/model/publicaciones/publicaciones";
-import { BaseService } from "../BaseService";
+import { BaseService } from '../BaseService';
+import { Publicaciones } from '~/domain/models/publication/Publicaciones';
 
 export class publicationsService extends BaseService<Publicaciones> {
-      private static factory: publicationsService = new publicationsService();
+  private static factory: publicationsService = new publicationsService();
 
-      static get instance():publicationsService{
-        return publicationsService.factory;
-      }
+  static get instance(): publicationsService {
+    return publicationsService.factory;
+  }
 
-      constructor(){
-        super('/foundations/publications')
-      }
+  constructor() {
+    super('/foundations/publications');
+  }
 
-      async GetPublicaciones(size=20):Promise<Publicaciones>{
-            return super.get<Publicaciones>(`?size=${size}`)
-      }
+  async GetPublicaciones(size = 20): Promise<Publicaciones> {
+    return super.get<Publicaciones>(`?size=${size}`);
+  }
 }

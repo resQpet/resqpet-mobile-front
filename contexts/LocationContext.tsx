@@ -1,11 +1,9 @@
-// contexts/LocationContext.tsx
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import * as Location from 'expo-location';
 import { Alert } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
-import { LocationContextType } from '~/domain/model/Location/Location';
 import Toast from 'react-native-toast-message';
-
+import { LocationContextType } from '~/domain/models/Location/location';
 
 const LocationContext = createContext<LocationContextType>({
   latitude: null,
@@ -14,12 +12,12 @@ const LocationContext = createContext<LocationContextType>({
 });
 
 export const LocationProvider = ({ children }: { children: React.ReactNode }) => {
-  const [latitude, setLatitude] = useState<number | null>(null);
-  const [longitude, setLongitud] = useState<number | null>(null);
+  const [latitude] = useState<number | null>(null);
+  const [longitude] = useState<number | null>(null);
 
   useEffect(() => {
-    checkIfLocationEnabled();
-    getCurrentLocation();
+    checkIfLocationEnabled().then((r) => console.log(r));
+    getCurrentLocation().then((r) => console.log(r));
   }, []);
 
   const checkIfLocationEnabled = async () => {
@@ -28,10 +26,10 @@ export const LocationProvider = ({ children }: { children: React.ReactNode }) =>
       Alert.alert('Location not enabled', 'Please enable your Location', [
         {
           text: 'Cancel',
-          onPress: () => Toast.show({text1:'Cancel Pressed'}),
+          onPress: () => Toast.show({ text1: 'Cancel Pressed' }),
           style: 'cancel',
         },
-        { text: 'OK', onPress: () => Toast.show({text1:'OK Pressed'}) },
+        { text: 'OK', onPress: () => Toast.show({ text1: 'OK Pressed' }) },
       ]);
     }
   };
@@ -57,5 +55,3 @@ export const LocationProvider = ({ children }: { children: React.ReactNode }) =>
     </LocationContext.Provider>
   );
 };
-export const useLocationContext = () => useContext(LocationContext);
-

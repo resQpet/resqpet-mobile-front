@@ -1,19 +1,19 @@
-import {Button} from '~/components/Button';
-import {useAuthContext} from '~/contexts/AuthContext';
-import {Text} from 'react-native';
-import {AppScreen} from '~/components/AppScreen';
-import SidebarMenu from "~/components/SidebarMenu";
+import { Text } from 'react-native';
+import PublicacionesList from '~/app/screens/(publicaciones)/PublicacionesList';
+import { useAuthContext } from '~/contexts/AuthContext';
+import { AppScreen } from '~/components/AppScreen';
+import { Button } from '~/components/Button';
 
 export default function Home() {
-    const {logout} = useAuthContext();
+  const { logout } = useAuthContext();
 
-    return (
-        <AppScreen title="Home">
-            <Text className="text-gray-700 leading-relaxed">
-                ResqPet es una plataforma diseñada para gestionar el rescate, adopción y cuidado de mascotas.
-            </Text>
-            <SidebarMenu/>
-            <Button title="Cerrar sesión" onPress={logout}/>
-        </AppScreen>
-    );
+  return (
+    <AppScreen title="Inicio">
+      <Text className="leading-relaxed text-gray-700">
+        ResqPet es una plataforma diseñada para gestionar el rescate, adopción y cuidado de mascotas.
+      </Text>
+      <PublicacionesList/>
+      <Button title="Cerrar sesión" onPress={logout} />
+    </AppScreen>
+  );
 }

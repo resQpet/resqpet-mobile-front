@@ -1,24 +1,34 @@
-import { Drawer } from 'expo-router/drawer';
-import { useAuthContext } from '~/contexts/AuthContext';
+import { Tabs } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 
-export default function MainLayout() {
-    const { validating, authenticated, hasAuthority } = useAuthContext();
+export default function MainTabLayout() {
+  return (
+    <Tabs
+      screenOptions={({ route }) => ({
+        tabBarActiveTintColor: '#0f766e',
+        tabBarInactiveTintColor: 'gray',
+        tabBarShowLabel: false,
+        headerShown: false,
+        tabBarIcon: ({ color, size }) => {
+          let iconName: keyof typeof Ionicons.glyphMap;
 
-    if (validating || !authenticated) return null;
+          switch (route.name) {
+            case 'index':
+              iconName = 'home-outline';
+              break;
+            case 'profile':
+              iconName = 'person-outline';
+              break;
+            case 'settings':
+              iconName = 'settings-outline';
+              break;
+            default:
+              iconName = 'ellipse-outline';
+          }
 
-    return (
-        <Drawer>
-            <Drawer.Screen name="index" options={{ title: 'Inicio' }} />
-            <Drawer.Screen name="Screens/(about)/about" options={{ title: 'About' }} />
-        
-            <Drawer.Screen name="Screens/(users)/usersList" options={{ title: 'Usuarios' }} />
-       
-            <Drawer.Screen name="Screens/(roles)/rolesList" options={{ title: 'Roles' }} /> 
-
-            <Drawer.Screen name='Screens/(publicaciones)/PublicacionesList' options={{title:'publicaciones'}} />
-            
-            <Drawer.Screen name='Screens/(fundaciones)/fundacionesList' options={{title:'Fundaciones'}}/>
-
-        </Drawer>
-    );
+          return <Ionicons name={iconName} size={size} color={color} />;
+        },
+      })}
+    />
+  );
 }
