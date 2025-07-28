@@ -41,6 +41,7 @@ export interface User extends Model {
   username: string;
   email: string;
   document: string;
+
   info: UserInfo;
   status: UserStatus;
   role: UserRole;

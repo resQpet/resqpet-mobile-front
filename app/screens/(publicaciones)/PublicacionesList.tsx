@@ -63,7 +63,7 @@ export default function PublicacionesList() {
       }
     };
 
-    fetchPublicaciones();
+    fetchPublicaciones().then((r) => console.log(r));
   }, []);
 
   const handleLikeToggle = (publicationId: number) => {
