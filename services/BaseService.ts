@@ -155,18 +155,30 @@ export abstract class BaseService<R = unknown> {
   }
 
   private async handleResponse<T>(res: Response): Promise<T> {
-    if (!res.ok) {
-      const text: string = await res.text();
-      const payload: object = text ? JSON.parse(text) : {};
-      return Promise.reject(payload);
-    }
+  if (!res.ok) {
+    const text = await res.text();
     try {
-      const payload: T = await this.getPayload(res);
-      return Promise.resolve(payload);
+      const payload = text ? JSON.parse(text) : {};
+      return Promise.reject(payload);
     } catch (e) {
-      return Promise.reject({ status: res.status, message: res.statusText, error: e });
+      return Promise.reject({ status: res.status, message: res.statusText });
     }
   }
+
+  const text = await res.text();
+
+  if (!text) {
+    return Promise.resolve(null as unknown as T);
+  }
+
+  try {
+    const payload = JSON.parse(text);
+    return Promise.resolve(payload as T);
+  } catch (e) {
+    return Promise.reject({ status: res.status, message: "Respuesta inválida (no es JSON)", error: e });
+  }
+}
+
 
   private async handleResponseBlob(res: Response): Promise<Blob> {
     if (!res.ok) {

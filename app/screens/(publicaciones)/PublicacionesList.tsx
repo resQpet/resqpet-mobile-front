@@ -1,4 +1,4 @@
-import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import { AppScreen } from '~/components/AppScreen';
 import { Publicaciones } from '~/domain/models/publication/Publicaciones';
@@ -8,7 +8,6 @@ import { Comment } from '~/services/publicaciones/CommentService';
 import { Comments } from '~/domain/models/publication/Comment';
 import Toast from 'react-native-toast-message';
 import BottomSheet from '@gorhom/bottom-sheet';
-
 import { PublicationCard } from '~/components/publication/PublicationCard';
 import { BottomSheets } from '~/components/io/input/PageBottomSheet';
 import PageComments from '~/components/io/input/PageComments';
@@ -131,17 +130,12 @@ export default function PublicacionesList() {
       </ScrollView>
 
       <BottomSheets ref={sheetRef} title="Comentarios">
-        {comentarios.content.length === 0 ? (
-          <View className="items-center px-4 py-6">
-            <Text className="text-sm italic text-gray-500">No hay comentarios.</Text>
-          </View>
-        ) : (
+        
           <PageComments
             content={comentarios.content}
             publicacionId={idPublicacionActual}
             onCommentPosted={reloadComments}
           />
-        )}
       </BottomSheets>
     </AppScreen>
   );

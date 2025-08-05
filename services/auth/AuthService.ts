@@ -40,7 +40,6 @@ export class AuthService extends BaseService {
 
   logout(): void {
     SecureStore.deleteItemAsync(StorageItem.TokenInfo).catch(() => {
-      console.log('error al eliminar token');
     });
   }
 

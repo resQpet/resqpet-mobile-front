@@ -4,6 +4,7 @@ import { Comment } from '~/services/publicaciones/CommentService';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Toast from 'react-native-toast-message';
 import { Comments, CreateComment } from '~/domain/models/publication/Comment';
+import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 
 interface Props extends Comments {
   publicacionId?: number;
@@ -152,7 +153,7 @@ const PageComments = ({ content = [], publicacionId, onCommentPosted }: Props) =
 
       {/* Input fijo abajo */}
       <View className="flex-row items-center gap-2 border-t border-gray-200 px-4 py-3">
-        <TextInput
+        <BottomSheetTextInput
           placeholder="Escribe un comentario..."
           className="flex-1 rounded-full border border-gray-300 bg-white px-4 py-3 text-base"
           value={Comentario}
