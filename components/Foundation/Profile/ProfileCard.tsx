@@ -8,31 +8,29 @@ type Props = {
   FollowerCount: number;
   OnFollow : boolean;
   Follower : (id : number )=>void;
+  onCreateChat?: () => void;  
 };
 
-export const FoundationProfile = ({ foundaction,OnFollow,FollowerCount,Follower }: Props) => {
+export const FoundationProfile = ({foundaction, OnFollow,FollowerCount,Follower,onCreateChat}: Props) => {
 
   const Router = useRouter();
 
   return (
-
     <View
       key={foundaction.id}
       className="bg-white p-3 rounded-xl shadow-md shadow-black/20"
     >
       <View>
-        <TouchableOpacity onPress={()=>{Router.push('/')}}>
-          <Ionicons 
+        <TouchableOpacity onPress={() => { Router.push('/') }}>
+          <Ionicons
             name='arrow-back-circle-outline'
             size={30}
-            >
-          </Ionicons>
+          />
         </TouchableOpacity>
       </View>
 
-      {/* LOGO + NOMBRE */}
       <View className="items-center mb-4">
-        
+
         {foundaction.logo && (
           <Image
             className="h-24 w-24 rounded-full mb-2"
@@ -44,7 +42,6 @@ export const FoundationProfile = ({ foundaction,OnFollow,FollowerCount,Follower 
         </Text>
       </View>
 
-      {/* INFO DE CONTACTO */}
       <View className="space-y-3">
         <Text className="text-base text-gray-600 flex-row">
           <Ionicons name="globe-outline" size={16} color="#4B5563" />{" "}
@@ -71,12 +68,21 @@ export const FoundationProfile = ({ foundaction,OnFollow,FollowerCount,Follower 
         </Text>
 
         <TouchableOpacity className={`px-6 py-3 rounded-full ${
-          OnFollow ?  "bg-gray-400" : "bg-green-500"
+          OnFollow ? "bg-gray-400" : "bg-green-500"
         }`}
-        onPress={()=>{Follower(foundaction.id)}}
+          onPress={() => { Follower(foundaction.id) }}
         >
-            <Text className="text-center">{OnFollow ? 'seguidores' : 'Seguir'} {FollowerCount}</Text>
+          <Text className="text-center">{OnFollow ? 'seguidores' : 'Seguir'} {FollowerCount}</Text>
         </TouchableOpacity>
+
+        {onCreateChat && (
+          <TouchableOpacity
+            onPress={onCreateChat}
+            className="mt-3 bg-blue-500 p-3 rounded-full"
+          >
+            <Text className="text-white text-center">Enviar mensaje</Text>
+          </TouchableOpacity>
+        )}
 
       </View>
     </View>
