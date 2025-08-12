@@ -11,12 +11,18 @@ import BottomSheet from '@gorhom/bottom-sheet';
 import { PublicationCard } from '~/components/publication/PublicationCard';
 import { BottomSheets } from '~/components/io/input/PageBottomSheet';
 import PageComments from '~/components/io/input/PageComments';
+import { FoundationService } from '~/services/fundaciones/foundations/FoundationService';
 
 const Like = Likers.instance;
 const Commen = Comment.instance;
 const Publicacion = publicationsService.instance;
+const Foundations = FoundationService.instance;
 
-export default function PublicacionesList() {
+type Props = {
+  IdFoundation?:number;
+}
+
+export default function PublicacionesList ({IdFoundation}:Props){
   const [publicaciones, setPublicaciones] = useState<Publicaciones | null>(null);
   const [loading, setLoading] = useState(true);
   const [likecounts, setLikecounts] = useState<Record<number, number>>({});
@@ -29,11 +35,20 @@ export default function PublicacionesList() {
   useEffect(() => {
     const fetchPublicaciones = async () => {
       try {
-        const res = await Publicacion.GetPublicaciones(20);
-        setPublicaciones(res);
+        
+        let res : Publicaciones
 
+        if(IdFoundation){
+         res = await Foundations.getfoundationPublication(IdFoundation)
+        }
+        else{
+          res = await Publicacion.GetPublicaciones(20);
+        }
+
+        setPublicaciones(res)
+       
         const ids = res.content.map((p) => p.id);
-
+        
         const likes = await Like.GetMultipleLikerCount(ids);
         const likeMap: Record<number, number> = {};
         ids.forEach((id, index) => {
@@ -55,14 +70,13 @@ export default function PublicacionesList() {
         );
         setLikedMap(likeTrueMap);
       } catch (error) {
-        Toast.show({ type: 'error', text1: 'Error de carga' });
-        console.error(error);
+        
       } finally {
         setLoading(false);
       }
     };
 
-    fetchPublicaciones().then((r) => console.log(r));
+    fetchPublicaciones()
   }, []);
 
   const handleLikeToggle = (publicationId: number) => {
@@ -116,8 +130,13 @@ export default function PublicacionesList() {
 
   return (
     <AppScreen title="Publicaciones">
-      <ScrollView className="bg-white px-4 py-6">
-        {publicaciones?.content.map((publicacion) => (
+     <ScrollView className="bg-white px-4 flex-1">
+      {publicaciones?.content.length === 0 ? (
+        <View className="flex-1 items-center justify-center mt-10">
+          <Text className="text-gray-500 text-lg">No hay publicaciones disponibles.</Text>
+        </View>
+      ) : (
+        publicaciones?.content.map((publicacion) => (
           <PublicationCard
             key={publicacion.id}
             publicacion={publicacion}
@@ -126,8 +145,9 @@ export default function PublicacionesList() {
             onLike={handleLikeToggle}
             onOpenComments={handleOpenComments}
           />
-        ))}
-      </ScrollView>
+        ))
+      )}
+    </ScrollView>
 
       <BottomSheets ref={sheetRef} title="Comentarios">
         

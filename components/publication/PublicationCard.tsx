@@ -35,7 +35,7 @@ export const PublicationCard = ({ publicacion, liked, likeCount, onLike, onOpenC
 
       <Text className="mb-2 text-gray-700">{publicacion.content}</Text>
 
-      {publicacion.images?.length > 0 && (
+      {publicacion.images?.length > 0 && publicacion.images[0].imageUrl ? (
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <View className="items-center p-4">
             <Image
@@ -45,7 +45,7 @@ export const PublicationCard = ({ publicacion, liked, likeCount, onLike, onOpenC
             />
           </View>
         </ScrollView>
-      )}
+      ) : null}
 
       {publicacion.animal?.name && publicacion.animal?.species && (
         <PublicationAnimalInfo animal={publicacion.animal} />

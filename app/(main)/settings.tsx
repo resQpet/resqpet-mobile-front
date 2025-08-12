@@ -3,15 +3,25 @@ import { Alert, Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useAuthContext } from '~/contexts/AuthContext';
+import { useEffect, useState} from 'react';
+import { UserService } from '~/services/users/UserService';
+import { User } from '~/domain/models/users/user';
+
+const UserSER = UserService.instance;
 
 export default function SettingsScreen() {
   const router = useRouter();
   const { logout } = useAuthContext();
+  const [UserInfo, setUserInfo] = useState<User | null>(null);
+
+  useEffect(()=>{
+   UserSER.current().then(setUserInfo)
+  },[])
 
   const user = {
-    name: 'Rodríguez Ivo Luis',
-    email: 'ivo@email.com',
-    avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
+    name: UserInfo?.username,
+    email: UserInfo?.email,
+    avatar: UserInfo?.info.image,
   };
 
   const menuOptions = [
@@ -25,13 +35,7 @@ export default function SettingsScreen() {
       icon: 'people-outline',
       title: 'Fundaciones a las que perteneces',
       description: 'Gestiona tus fundaciones',
-      onPress: () => router.push('/search'),
-    },
-    {
-      icon: 'paw-outline',
-      title: 'Mis adopciones',
-      description: 'Consulta tus adopciones',
-      onPress: () => router.push('/search'),
+      onPress: () => router.push('/screens/(Foundations)/(myFoundation)/myFoundation'),
     },
     {
       icon: 'log-out-outline',
@@ -73,12 +77,6 @@ export default function SettingsScreen() {
             <Text className="text-lg font-bold">{user.name}</Text>
             <Text className="text-sm text-slate-500">{user.email}</Text>
           </View>
-          <Pressable
-            className="ml-2 rounded-full p-1 active:bg-slate-100"
-            onPress={() => router.push('/search')}
-            hitSlop={10}>
-            <Ionicons name="create-outline" size={22} color="#0f766e" />
-          </Pressable>
         </View>
 
         {/* Opciones menú */}

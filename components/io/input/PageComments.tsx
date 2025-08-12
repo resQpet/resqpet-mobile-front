@@ -159,7 +159,8 @@ const PageComments = ({ content = [], publicacionId, onCommentPosted }: Props) =
           value={Comentario}
           onChangeText={setComentario}
           multiline
-        />
+        >
+        </BottomSheetTextInput>
         <TouchableOpacity onPress={handleCommentPost}>
           <Ionicons name="send-outline" size={30} color="#2563eb" />
         </TouchableOpacity>
