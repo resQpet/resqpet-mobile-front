@@ -28,6 +28,9 @@ export default function MainTabLayout() {
             case 'index':
               iconName = 'home-outline';
               break;
+            case 'Chats':
+              iconName= 'chatbubbles';
+              break;
             case 'search':
               iconName = 'search-outline';
               break;
