@@ -1,17 +1,8 @@
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useRouter } from 'expo-router';
-import {
-  Image,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Image,KeyboardAvoidingView,Platform,ScrollView,Text,TouchableOpacity,View} from 'react-native';
 import Toast from 'react-native-toast-message';
-
 import { useAuthContext } from '~/contexts/AuthContext';
 import { Input } from '~/components/io/input/Input';
 import { PasswordInput } from '~/components/io/input/PasswordInput';
@@ -31,6 +22,11 @@ export default function Login() {
     try {
       authenticate({ username, password });
       router.replace('/');
+      Toast.show({
+        type: 'success',
+        text1: 'Inicio Sesion exitoso',
+        text2: 'Puedes usar la app',
+      });
     } catch {
       Toast.show({
         type: 'error',
@@ -82,26 +78,12 @@ export default function Login() {
                 placeholderTextColor="#94a3b8"
               />
 
-              <View className="w-full items-end">
-                <TouchableOpacity
-                  className="px-2 py-1"
-                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-                  <Text className="text-sm font-medium text-teal-600">¿Olvidó su contraseña?</Text>
-                </TouchableOpacity>
-              </View>
-
               <Button
                 title="Entrar"
                 onPress={handleSubmit(onSubmit)}
                 className="rounded-full bg-teal-600 py-3 text-base font-semibold text-white shadow-md"
               />
 
-              <View className="flex-row justify-center">
-                <Text className="text-sm text-gray-600">¿Aún no tienes cuenta? </Text>
-                <TouchableOpacity onPress={() => router.push('/(auth)/register')}>
-                  <Text className="text-sm font-semibold text-teal-700">¡Regístrate!</Text>
-                </TouchableOpacity>
-              </View>
             </View>
           </View>
         </ScrollView>

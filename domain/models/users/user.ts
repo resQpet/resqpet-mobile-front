@@ -1,5 +1,6 @@
 import { Model } from '../Model';
 import { SelectOption } from '../../types/steoreotype';
+import { Foundation } from '../foundations/Foundation';
 
 export enum Gender {
   MALE = 'MALE',
@@ -41,10 +42,9 @@ export interface User extends Model {
   username: string;
   email: string;
   document: string;
-
   info: UserInfo;
   status: UserStatus;
-  role: UserRole;
+  roles: UserRole[];
 }
 
 export interface UserInfo extends Model {
@@ -60,7 +60,8 @@ export interface UserInfo extends Model {
 export interface UserRole {
   id: number;
   name: string;
-  description: string;
+  foundation:Foundation
+  role:string
   authorities?: Authority[];
 }
 

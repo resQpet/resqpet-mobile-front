@@ -1,9 +1,11 @@
 import { FoundationLocation } from '~/domain/models/foundations/FoundationLocation';
+import { Model } from '../Model';
 
-export interface Foundation {
-  id: number;
-  createdAt: string;
-  updatedAt: string;
+export interface Foundations {
+  content : Foundation[];
+}
+
+export interface Foundation extends Model{
   name: string;
   foundedDate?: string;
   email?: string;
@@ -12,4 +14,5 @@ export interface Foundation {
   logo?: string;
   status?: string;
   locations?: FoundationLocation;
+  memberCount?:number
 }

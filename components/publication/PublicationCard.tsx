@@ -3,6 +3,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { PublicationFoundationInfo } from './PublicationFoundationInfo';
 import { PublicationAnimalInfo } from './PublicationAnimalInfo';
 import { Publicacion } from '~/domain/models/publication/Publicaciones';
+import { useRouter } from 'expo-router';
+
 
 type Props = {
   publicacion: Publicacion;
@@ -13,18 +15,27 @@ type Props = {
 };
 
 export const PublicationCard = ({ publicacion, liked, likeCount, onLike, onOpenComments, }: Props) => {
+
+  const Router = useRouter();
   return (
     <View className="mb-6 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
-      <PublicationFoundationInfo
-        logo={publicacion.foundation.logo}
-        name={publicacion.foundation.name}
-      />
 
+       <TouchableOpacity
+       key={publicacion.foundation.id}
+       onPress={()=>{Router.push({pathname: "/screens/(Profile)/[ID]/Profile",
+        params: { ID: publicacion.foundation.id.toString() }});
+        }}>
+            <PublicationFoundationInfo
+              logo={publicacion.foundation.logo}
+              name={publicacion.foundation.name}
+            />  
+        </TouchableOpacity>
+      
       <Text className="mb-1 text-lg font-semibold text-gray-900">{publicacion.title}</Text>
 
       <Text className="mb-2 text-gray-700">{publicacion.content}</Text>
 
-      {publicacion.images?.length > 0 && (
+      {publicacion.images?.length > 0 && publicacion.images[0].imageUrl ? (
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <View className="items-center p-4">
             <Image
@@ -34,7 +45,7 @@ export const PublicationCard = ({ publicacion, liked, likeCount, onLike, onOpenC
             />
           </View>
         </ScrollView>
-      )}
+      ) : null}
 
       {publicacion.animal?.name && publicacion.animal?.species && (
         <PublicationAnimalInfo animal={publicacion.animal} />
